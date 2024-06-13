@@ -16,7 +16,7 @@ app.use('/api/patients', patientRouter);
 app.use('/api/receptionists', receptionistRouter);
 
 
-
+ 
 app.listen(5000, function(){
     console.log('Server is running on port 5000'); 
 });

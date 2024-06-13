@@ -79,6 +79,6 @@ router.patch('/', async (req,res) => {
     } catch (error) {
         res.status(500).json({ message: 'An error occurred', error: error.message });
     }
-});
+}); 
 
 module.exports = router;
