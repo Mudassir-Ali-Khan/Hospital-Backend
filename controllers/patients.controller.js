@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Patient = require('../models/patients.model');
+const hash512 = require('../utils/hash');
 
 
 router.post('/', async function (req, res) {
@@ -17,7 +18,7 @@ router.post('/', async function (req, res) {
             firstname,
             lastname,
             email,
-            password,
+            password: hash512(password),
             phonenumber,
             gender
         });
@@ -35,7 +36,7 @@ router.post('/', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try {
-        const patients = await Patient.find() .sort({ _id: -1 });
+        const patients = await Patient.find().select('-password') .sort({ _id: -1 });
 
         res.status(200).json(patients);
         
