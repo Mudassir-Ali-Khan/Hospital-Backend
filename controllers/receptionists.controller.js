@@ -75,6 +75,8 @@ router.patch('/', async (req,res) => {
 
         if (updatedReceptionists) {
             res.status(200).json({ message: 'receptionist updated successfully' });
+        } else {
+            res.status(404).json({ message: 'Receptionist not found' });
         }
         
     } catch (error) {

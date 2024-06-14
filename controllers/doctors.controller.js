@@ -84,6 +84,8 @@ router.patch('/', async (req,res) => {
 
         if (updatedDoctors) {
             res.status(200).json({ message: 'Doctor updated successfully' });
+        } else {
+            res.status(404).json({ message: 'Doctor not found' });
         }
         
     } catch (error) {
