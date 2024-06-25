@@ -19,6 +19,11 @@ router.post('/', async function (req, res) {
             throw new Error("Doctor already exists");
         }
 
+        if (!email || !email.includes('@doctor.com')) {
+            res.status(400);
+            throw new Error("Email must be a valid address ending with @doctor.com");
+        }
+
         const newDoctor = new Doctor({
             firstname,
             lastname,

@@ -13,6 +13,10 @@ router.post('/', async function (req, res) {
             throw new Error("Please enter all fields");
         }
 
+        if (!email || !email.includes('@patient.com')) {
+            res.status(400);
+            throw new Error("Email must be a valid address ending with @patient.com");
+        }
 
         const newPatient = new Patient({
             firstname,
