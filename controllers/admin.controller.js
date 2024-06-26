@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Admin = require('../models/admin.model');
-
+const hash512 = require('../utils/hash'); 
 
 
 router.post('/', async function (req, res) {
@@ -17,11 +17,11 @@ router.post('/', async function (req, res) {
             res.status(400);
             throw new Error("Email must be a valid address ending with @admin.com");
         }
-
+        console.log("hash", hash512(password));
         const newAdmin = new Admin({
             fullname,
             email,
-            password,
+            password: hash512(password),
             isAdmin
         });
 
