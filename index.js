@@ -7,10 +7,9 @@ const doctorRouter = require('./controllers/doctors.controller');
 const patientRouter = require('./controllers/patients.controller');
 const receptionistRouter = require('./controllers/receptionists.controller');
 const adminRouter = require('./controllers/admin.controller')
-
+const authRouter = require('./controllers/login.controller')
 
 const app = express();
-
 
 app.use(express.json());
 app.use(cors());
@@ -18,6 +17,7 @@ app.use('/api/doctors', doctorRouter);
 app.use('/api/patients', patientRouter);
 app.use('/api/receptionists', receptionistRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/auth', authRouter);
 
  
 app.listen(5000, function(){
