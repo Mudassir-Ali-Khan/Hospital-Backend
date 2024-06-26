@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Doctor = require('../models/doctors.model');
+const hash512 = require('../utils/hash');
 
 
 router.post('/', async function (req, res) {
@@ -28,7 +29,7 @@ router.post('/', async function (req, res) {
             firstname,
             lastname,
             email,
-            password,
+            password: hash512(password),
             PMC,
             qualification,
             phonenumber,

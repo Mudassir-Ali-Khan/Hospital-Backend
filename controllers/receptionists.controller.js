@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Receptionist = require('../models/receptionists.model');
+const hash512 = require('../utils/hash');
 
 router.post('/', async function (req, res) {
     try {
@@ -20,7 +21,7 @@ router.post('/', async function (req, res) {
             firstname,
             lastname,
             email,
-            password,
+            password: hash512(password),
             phonenumber,
             gender
         });
