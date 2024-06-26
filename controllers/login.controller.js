@@ -3,6 +3,9 @@ const hash512 = require('../utils/hash');
 const generateToken = require('../utils/jwt');
 
 const Admin = require('../models/admin.model');
+const Patient = require('../models/patients.model');
+const Doctor = require('../models/doctors.model');
+const Receptionist = require('../models/receptionists.model')
 
 const router = express.Router();
 
@@ -48,11 +51,108 @@ router.post('/login', async function (req, res) {
             });
         }
       } else if (userEmail.includes('@patient.com')) { // for patient
+        const patientObj = await Patient.findOne({ email: userEmail, password: hashedPassword }) // null, returns the object
 
-      } else if (userEmail.includes('@doctor.com')) { // for doctors
-        
+        if (patientObj === null) {
+            res.status(401);
+            throw new Error("Invalid email or password");    
+        } else {
+            // data, private/secret key, expiry time
+            const myTokenObj = {
+                email: patientObj.email,
+                firstname: patientObj.firstname,
+                lastname: patientObj.lastname,
+                phonenumber: patientObj.phonenumber,
+                gender: patientObj.gender,
+                isAdmin: false,
+                _id: patientObj._id
+            }
+            // const token = generateToken(myTokenObj)
+            const token = generateToken({
+                email: patientObj.email,
+                firstname: patientObj.firstname,
+                lastname: patientObj.lastname,
+                phonenumber: patientObj.phonenumber,
+                gender: patientObj.gender,
+                isAdmin: false,
+                _id: patientObj._id
+            });
+            res.status(200).json({
+                message: 'Login successful',
+                token,
+                user: myTokenObj
+            });
+        }
+      } else if (userEmail.includes('@doctor.com')) { // for receptionist
+        const doctorObj = await Doctor.findOne({ email: userEmail, password: hashedPassword }) // null, returns the object
+
+        if (doctorObj === null) {
+            res.status(401);
+            throw new Error("Invalid email or password");    
+        } else {
+            // data, private/secret key, expiry time
+            const myTokenObj = {
+                email: doctorObj.email,
+                firstname: doctorObj.firstname,
+                lastname: doctorObj.lastname,
+                PMC: doctorObj.PMC,
+                qualification: doctorObj.qualification,
+                phonenumber: doctorObj.phonenumber,
+                gender: doctorObj.gender,
+                isAdmin: false,
+                _id: doctorObj._id,
+            }
+            // const token = generateToken(myTokenObj)
+            const token = generateToken({
+                email: doctorObj.email,
+                firstname: doctorObj.firstname,
+                lastname: doctorObj.lastname,
+                PMC: doctorObj.PMC,
+                qualification: doctorObj.qualification,
+                phonenumber: doctorObj.phonenumber,
+                gender: doctorObj.gender,
+                isAdmin: false,
+                _id: doctorObj._id,
+            });
+            res.status(200).json({
+                message: 'Login successful',
+                token,
+                user: myTokenObj
+            });
+        }
       } else if (userEmail.includes('@receptionist.com')) { // for receptionist
+        const receptionistObj = await Receptionist.findOne({ email: userEmail, password: hashedPassword }) // null, returns the object
 
+        if (receptionistObj === null) {
+            res.status(401);
+            throw new Error("Invalid email or password");    
+        } else {
+            // data, private/secret key, expiry time
+            const myTokenObj = {
+                email: receptionistObj.email,
+                firstname: receptionistObj.firstname,
+                lastname: receptionistObj.lastname,
+                phonenumber: receptionistObj.phonenumber,
+                gender: receptionistObj.gender,
+                isAdmin: false,
+                _id: receptionistObj._id,
+            }
+            // const token = generateToken(myTokenObj)
+            const token = generateToken({
+                email: receptionistObj.email,
+                firstname: receptionistObj.firstname,
+                lastname: receptionistObj.lastname,
+                phonenumber: receptionistObj.phonenumber,
+                gender: receptionistObj.gender,
+                isAdmin: false,
+                _id: receptionistObj._id,
+            });
+            res.status(200).json({
+                message: 'Login successful',
+                token,
+                user: myTokenObj
+            });
+        }
       } else {
         res.status(401);
         throw new Error("Invalid email or password");
