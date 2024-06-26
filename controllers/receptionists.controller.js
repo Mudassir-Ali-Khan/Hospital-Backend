@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Receptionist = require('../models/receptionists.model');
 
-
-
 router.post('/', async function (req, res) {
     try {
         const { firstname, lastname, email, password, phonenumber, gender } = req.body;

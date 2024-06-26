@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Admin = require('../models/admin.model');
-
-
+const hash512 = require('../utils/hash');
+const generateToken = require('../utils/jwt');
 
 router.post('/', async function (req, res) {
     try {
-        const { fullname, email, password, isAdmin } = req.body; // Destructuring the request body
+        const { fullname, email, password } = req.body; // Destructuring the request body
 
-        if (!fullname || !email || !password || !isAdmin) {
+        if (!fullname || !email || !password) {
             res.status(400);
             throw new Error("Please enter all fields");
         }
@@ -18,11 +18,15 @@ router.post('/', async function (req, res) {
             throw new Error("Email must be a valid address ending with @admin.com");
         }
 
+        // const pass =  hash512(password);
+        
+        // console.log(pass.toString(), pass);
+
         const newAdmin = new Admin({
             fullname,
             email,
-            password,
-            isAdmin
+            password: hash512(password),
+            isAdmin: true
         });
 
         newAdmin.save()
@@ -35,5 +39,6 @@ router.post('/', async function (req, res) {
         });
     }
 });
+
 
 module.exports = router;
