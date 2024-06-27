@@ -13,6 +13,14 @@ router.post('/', async function (req, res) {
             throw new Error("Please enter all fields");
         }
 
+        const patient = await Patient.findOne({ email: email });
+
+        if (patient !== null) {
+            res.status(400);
+            throw new Error("Doctor already exists");
+        }
+
+
         if (!email || !email.includes('@patient.com')) {
             res.status(400);
             throw new Error("Email must be a valid address ending with @patient.com");

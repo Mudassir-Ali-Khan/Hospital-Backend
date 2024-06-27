@@ -8,6 +8,13 @@ router.post('/', async function (req, res) {
     try {
         const { fullname, email, password } = req.body; // Destructuring the request body
 
+        const admin = await Admin.findOne({ email: email });
+
+        if (admin !== null) {
+            res.status(400);
+            throw new Error("Doctor already exists");
+        }
+
         if (!fullname || !email || !password) {
             res.status(400);
             throw new Error("Please enter all fields");

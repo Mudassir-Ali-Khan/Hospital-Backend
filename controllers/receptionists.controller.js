@@ -12,6 +12,14 @@ router.post('/', async function (req, res) {
             throw new Error("Please enter all fields");
         }
 
+        const receptionist = await Receptionist.findOne({ email: email });
+
+        if (receptionist !== null) {
+            res.status(400);
+            throw new Error("Doctor already exists");
+        }
+
+
         if (!email || !email.includes('@receptionist.com')) {
             res.status(400);
             throw new Error("Email must be a valid address ending with @receptionist.com");
