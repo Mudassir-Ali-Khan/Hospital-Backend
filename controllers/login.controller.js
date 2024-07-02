@@ -68,15 +68,7 @@ router.post('/login', async function (req, res) {
                 _id: patientObj._id
             }
             // const token = generateToken(myTokenObj)
-            const token = generateToken({
-                email: patientObj.email,
-                firstname: patientObj.firstname,
-                lastname: patientObj.lastname,
-                phonenumber: patientObj.phonenumber,
-                gender: patientObj.gender,
-                isAdmin: false,
-                _id: patientObj._id
-            });
+            const token = generateToken(myTokenObj);
             res.status(200).json({
                 message: 'Login successful',
                 token,
@@ -103,17 +95,7 @@ router.post('/login', async function (req, res) {
                 _id: doctorObj._id,
             }
             // const token = generateToken(myTokenObj)
-            const token = generateToken({
-                email: doctorObj.email,
-                firstname: doctorObj.firstname,
-                lastname: doctorObj.lastname,
-                PMC: doctorObj.PMC,
-                qualification: doctorObj.qualification,
-                phonenumber: doctorObj.phonenumber,
-                gender: doctorObj.gender,
-                isAdmin: false,
-                _id: doctorObj._id,
-            });
+            const token = generateToken(myTokenObj);
             res.status(200).json({
                 message: 'Login successful',
                 token,
@@ -138,15 +120,7 @@ router.post('/login', async function (req, res) {
                 _id: receptionistObj._id,
             }
             // const token = generateToken(myTokenObj)
-            const token = generateToken({
-                email: receptionistObj.email,
-                firstname: receptionistObj.firstname,
-                lastname: receptionistObj.lastname,
-                phonenumber: receptionistObj.phonenumber,
-                gender: receptionistObj.gender,
-                isAdmin: false,
-                _id: receptionistObj._id,
-            });
+            const token = generateToken(myTokenObj);
             res.status(200).json({
                 message: 'Login successful',
                 token,
