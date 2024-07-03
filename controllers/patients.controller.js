@@ -17,7 +17,7 @@ router.post('/', async function (req, res) {
 
         if (patient !== null) {
             res.status(400);
-            throw new Error("Doctor already exists");
+            throw new Error("Patient already exists");
         }
 
 
@@ -35,7 +35,7 @@ router.post('/', async function (req, res) {
             gender
         });
 
-        newPatient.save()
+        await newPatient.save()
 
         res.status(201).send('Patient added successfully');
     } catch (error) {
