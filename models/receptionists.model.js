@@ -7,6 +7,7 @@ const receptionistSchema = new mongoose.Schema({
     password: String,
     phonenumber: Number,
     gender: String,
+    isActive: Boolean,
 });
 
 const Receptionist = mongoose.model('Receptionist', receptionistSchema);

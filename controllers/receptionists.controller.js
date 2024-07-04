@@ -31,7 +31,8 @@ router.post('/', async function (req, res) {
             email,
             password: hash512(password),
             phonenumber,
-            gender
+            gender,
+            isActive: false
         });
 
         newReceptionist.save()

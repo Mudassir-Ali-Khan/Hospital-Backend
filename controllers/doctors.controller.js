@@ -33,7 +33,8 @@ router.post('/', async function (req, res) {
             PMC,
             qualification,
             phonenumber,
-            gender
+            gender,
+            isActive: false
         });
 
         newDoctor.save()

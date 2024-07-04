@@ -9,6 +9,7 @@ const doctorSchema = new mongoose.Schema({
     qualification: String,
     phonenumber: Number,
     gender: String,
+    isActive: Boolean,
 });
 
 const Doctor = mongoose.model('Doctor', doctorSchema);
