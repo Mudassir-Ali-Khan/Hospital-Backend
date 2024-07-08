@@ -102,22 +102,25 @@ router.patch('/updatepassword', async (req,res) => {
         const newPassword = req.body.newPassword;
         const confirmPassword = req.body.confirmPassword;
         
+        
 
         if (newPassword !== confirmPassword) {
-            res.status(400).json({ message: 'Passwords do not match' });
+            return res.status(400).json({ message: 'Passwords do not match' });
         }
 
         const hashedPassword = hash512(password);
-
-        const patient = await Patient.findOne({_id: patientId}, { password: hashedPassword } );
-
-        if (!patient) {
-             res.status(400).json({ message: 'Incorrect old password' });
+        console.log(hashedPassword.toString());
+        const patient = await Patient.findById(patientId);
+        console.log("hello", patient)
+        if (!patient || String(patient.password) != hashedPassword.toString()) {
+             return res.status(400).json({ message: 'Incorrect old password' });
         }
-
+        if (password == newPassword) {
+            return res.status(400).json({message: 'old password can not be same as new password'})
+        }
         const hashedNewPassword = hash512(newPassword);
 
-        const updatedPatient = await Patient.findByIdAndUpdate(patientId, { password: hashedNewPassword },);
+        const updatedPatient = await Patient.findByIdAndUpdate(patientId, { password: hashedNewPassword.toString() },);
 
         if (updatedPatient) {
             res.status(200).json({ message: 'Patient updated successfully' });
