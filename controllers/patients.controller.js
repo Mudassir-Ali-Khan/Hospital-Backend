@@ -90,11 +90,76 @@ router.patch('/', async (req,res) => {
         } else {
             res.status(404).json({ message: 'Patient not found' });
         }
-
-        
     } catch (error) {
         res.status(500).json({ message: 'An error occurred', error: error.message });
     }
 }); 
+
+router.patch('/updatepassword', async (req,res) => {
+    try {
+        const patientId = req.body.patientId;
+        const password = req.body.password;
+        const newPassword = req.body.newPassword;
+        const confirmPassword = req.body.confirmPassword;
+        
+
+        if (newPassword !== confirmPassword) {
+            res.status(400).json({ message: 'Passwords do not match' });
+        }
+
+        const hashedPassword = hash512(password);
+
+        const patient = await Patient.findOne({_id: patientId}, { password: hashedPassword } );
+
+        if (!patient) {
+             res.status(400).json({ message: 'Incorrect old password' });
+        }
+
+        const hashedNewPassword = hash512(newPassword);
+
+        const updatedPatient = await Patient.findByIdAndUpdate(patientId, { password: hashedNewPassword },);
+
+        if (updatedPatient) {
+            res.status(200).json({ message: 'Patient updated successfully' });
+        } else {
+            res.status(404).json({ message: 'Patient not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'An error occurred', error: error.message });
+    }
+})
+
+
+// router.patch('/updatepassword', async (req,res) => {
+//     try {
+//         const PatientEmail = req.body.email;
+//         const updatePassword = {
+//           oldPassword: req.body.oldPassword,
+//           newPassword: req.body.newPassword,
+//           confirmPassword: req.body.confirmPassword,
+//         }
+        
+//         const updatedPassword = await Patient.findOneAndUpdate(PatientEmail, updatePassword)
+
+        // if (newPassword !== confirmPassword) {
+        //     res.status(400).json({ message: 'Passwords do not match' });
+        //     return;
+        // }
+        // if (patient.password !== hash512(oldPassword)) {
+        //     res.status(400).json({ message: 'Incorrect old password' });
+        //     return;
+        // }
+        // if (newPassword == hash512(oldPassword)){
+        //     res.status(400).json({message: 'New password matches old'})
+        // }
+
+//         if (updatedPassword) {
+//             res.status(200).json({ message: 'Password updated successfully' });
+//         } 
+//     } catch (error) {
+//         res.status(500).json({ message: 'An error occurred', error: error.message });
+//     }
+// }); 
+
 
 module.exports = router;
