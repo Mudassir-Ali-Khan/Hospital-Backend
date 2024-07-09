@@ -96,4 +96,41 @@ router.patch('/', async (req,res) => {
     }
 }); 
 
+router.patch('/updatepassword', async (req,res) => {
+    try {
+        const receptionistId = req.body.receptionistId;
+        const password = req.body.password;
+        const newPassword = req.body.newPassword;
+        const confirmPassword = req.body.confirmPassword;
+        
+        
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: 'Passwords do not match' });
+        }
+
+        const hashedPassword = hash512(password);
+        console.log(hashedPassword.toString());
+        const receptionist = await Receptionist.findById(receptionistId);
+        console.log("hello", receptionist)
+        if (!receptionist || String(receptionist.password) != hashedPassword.toString()) {
+             return res.status(400).json({ message: 'Incorrect old password' });
+        }
+        if (password == newPassword) {
+            return res.status(400).json({message: 'old password can not be same as new password'})
+        }
+        const hashedNewPassword = hash512(newPassword);
+
+        const updatedreceptionist = await Receptionist.findByIdAndUpdate(receptionistId, { password: hashedNewPassword.toString() },);
+
+        if (updatedreceptionist) {
+            res.status(200).json({ message: 'receptionist updated successfully' });
+        } else {
+            res.status(404).json({ message: 'receptionist not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'An error occurred', error: error.message });
+    }
+})
+
 module.exports = router;
