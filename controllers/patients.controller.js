@@ -132,6 +132,24 @@ router.patch('/updatepassword', async (req,res) => {
     }
 })
 
+router.get('/api/patients', async function (req, res) {
+    try {
+        const { page = 1, limit = 10 } = req.query;
+        const pageNum = parseInt(page, 10);
+        const limitNum = parseInt(limit, 10);
+        
+        const patients = await Patient.find({})
+            .skip((pageNum - 1) * limitNum)
+            .limit(limitNum);
+
+        res.status(200).json(patients);
+        
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
 
 // router.patch('/updatepassword', async (req,res) => {
 //     try {
