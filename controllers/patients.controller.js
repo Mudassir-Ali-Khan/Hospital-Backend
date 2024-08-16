@@ -48,23 +48,36 @@ router.post('/', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try {
-        const { page = 1, limit = 10 } = req.query;
+        const { page = 1, limit = 10, search = '' } = req.query;
         const pageNum = parseInt(page);
         const limitNum = parseInt(limit);
-        console.log(pageNum, limitNum);
-        const patients = await Patient.find({}).select('-password') .sort({ _id: -1 })
+
+        const searchQuery = {};
+
+        if (search.trim() !== '') {
+            searchQuery.$or = [
+                { firstname: { $regex: search, $options: 'i' } },
+                { lastname: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+                { gender: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const patients = await Patient.find(searchQuery)
+            .select('-password') 
+            .sort({ _id: -1 })
             .skip((pageNum - 1) * limitNum)
             .limit(limitNum);
 
         res.status(200).json(patients);
 
-        
     } catch (error) {
         res.status(500).json({
             message: error.message
         });
     }
 });
+
 
 router.delete('/', async (req, res) => {
     const patientId = req.body.patientId;
