@@ -7,6 +7,8 @@ const patientSchema = new mongoose.Schema({
     password: String,
     phonenumber: Number,
     gender: String,
+}, {
+    timestamps: true
 });
 
 const Patient = mongoose.model('Patient', patientSchema);
