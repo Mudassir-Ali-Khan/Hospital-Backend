@@ -8,6 +8,8 @@ const receptionistSchema = new mongoose.Schema({
     phonenumber: Number,
     gender: String,
     isActive: Boolean,
+}, {
+    timestamps: true
 });
 
 const Receptionist = mongoose.model('Receptionist', receptionistSchema);

@@ -10,6 +10,8 @@ const doctorSchema = new mongoose.Schema({
     phonenumber: Number,
     gender: String,
     isActive: Boolean,
+}, {
+    timestamps: true
 });
 
 const Doctor = mongoose.model('Doctor', doctorSchema);
