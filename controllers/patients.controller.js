@@ -68,8 +68,10 @@ router.get('/', async function (req, res) {
             .sort({ _id: -1 })
             .skip((pageNum - 1) * limitNum)
             .limit(limitNum);
+        
+        const totalRecords = await Patient.countDocuments(searchQuery);
 
-        res.status(200).json(patients);
+        res.status(200).json({ data: patients, meta: { totalRecords } });
 
     } catch (error) {
         res.status(500).json({
