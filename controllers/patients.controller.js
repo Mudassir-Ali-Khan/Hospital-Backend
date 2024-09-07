@@ -48,9 +48,11 @@ router.post('/', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try {
-        const { page = 1, limit = 10, search = '', status = ''} = req.query;
+        const { page = 1, limit = 10, search = '', status = '', dateFilter = '' } = req.query;
         const pageNum = parseInt(page);
         const limitNum = parseInt(limit);
+
+        // dateFilter = '2022-12-31,2023-01-01';
 
         const searchQuery = {};
 
@@ -59,10 +61,18 @@ router.get('/', async function (req, res) {
                 { firstname: { $regex: search, $options: 'i' } },
                 { lastname: { $regex: search, $options: 'i' } },
                 { email: { $regex: search, $options: 'i' } },
-                { gender: { $regex: search, $options: 'i' } }
+                { gender: { $regex: search, $options: 'i' } },
+                // { phonenumber: { $regex: search, $options: 'i' } },
             ];
         }
 
+        if (dateFilter) {
+            console.log("dateFilter", dateFilter);
+            const [startDate, endDate] = dateFilter.split(',');
+            console.log(startDate, endDate)
+            searchQuery.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+        }
+        
         if (status && status !== "All") {
             searchQuery.gender = status;
         }
@@ -79,6 +89,7 @@ router.get('/', async function (req, res) {
         res.status(200).json({ data: patients, meta: { totalRecords } });
 
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             message: error.message
         });
