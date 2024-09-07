@@ -48,7 +48,7 @@ router.post('/', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try {
-        const { page = 1, limit = 10, search = '' } = req.query;
+        const { page = 1, limit = 10, search = '', status = ''} = req.query;
         const pageNum = parseInt(page);
         const limitNum = parseInt(limit);
 
@@ -62,6 +62,11 @@ router.get('/', async function (req, res) {
                 { gender: { $regex: search, $options: 'i' } }
             ];
         }
+
+        if (status && status !== "All") {
+            searchQuery.gender = status;
+        }
+        
 
         const patients = await Patient.find(searchQuery)
             .select('-password') 
