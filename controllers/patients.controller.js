@@ -96,6 +96,23 @@ router.get('/', async function (req, res) {
     }
 });
 
+router.get('/:patientId', async (req,res) => {
+    try {
+        const patientId = req.params.patientId;
+        const patient = await Patient.findById(patientId).select('-password');
+        if (patient) {
+            res.status(200).json(patient);
+        } else {
+            res.status(404).json({ message: 'Patient not found' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: error.message
+        });
+    }
+})
+
 
 router.delete('/', async (req, res) => {
     const patientId = req.body.patientId;
