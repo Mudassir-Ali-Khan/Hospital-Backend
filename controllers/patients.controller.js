@@ -126,19 +126,18 @@ router.delete('/', async (req, res) => {
     }
 });
 
-router.patch('/', async (req,res) => {
+router.patch('/:id', async (req, res) => {
     try {
-        const patientId = req.body.patientId;
+        const patientId = req.params.id; 
         const updatePatients = {
-          firstname: req.body.firstname,
-          lastname: req.body.lastname,
-          email: req.body.email,
-          password: req.body.password,
-          phonenumber: req.body.phonenumber,
-          gender: req.body.gender
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            email: req.body.email,
+            phonenumber: req.body.phonenumber,
+            gender: req.body.gender
         }
 
-        const updatedPatients = await Patient.findByIdAndUpdate(patientId, updatePatients)
+        const updatedPatients = await Patient.findByIdAndUpdate(patientId, updatePatients);
 
         if (updatedPatients) {
             res.status(200).json({ message: 'Patient updated successfully' });
@@ -148,7 +147,7 @@ router.patch('/', async (req,res) => {
     } catch (error) {
         res.status(500).json({ message: 'An error occurred', error: error.message });
     }
-}); 
+});
 
 router.patch('/updatepassword', async (req,res) => {
     try {
