@@ -50,16 +50,73 @@ router.post('/', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try {
-        const doctors = await Doctor.find() .sort({ _id: -1 });
+        const { page = 1, limit = 10, search = '', status = '', dateFilter = '' } = req.query;
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
 
-        res.status(200).json(doctors);
+        // dateFilter = '2022-12-31,2023-01-01';
+
+        const searchQuery = {};
+
+        if (search.trim() !== '') {
+            searchQuery.$or = [
+                { firstname: { $regex: search, $options: 'i' } },
+                { lastname: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+                { pmc: { $regex: search, $options: 'i' } },
+                { qualification: { $regex: search, $options: 'i' } },
+                { gender: { $regex: search, $options: 'i' } },
+                // { phonenumber: { $regex: search, $options: 'i' } },
+            ];
+        }
+
+        if (dateFilter) {
+            console.log("dateFilter", dateFilter);
+            const [startDate, endDate] = dateFilter.split(',');
+            console.log(startDate, endDate)
+            searchQuery.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+        }
         
+        if (status && status !== "All") {
+            searchQuery.gender = status;
+        }
+        
+
+        const doctors = await Doctor.find(searchQuery)
+            .select('-password') 
+            .sort({ _id: -1 })
+            .skip((pageNum - 1) * limitNum)
+            .limit(limitNum);
+        
+        const totalRecords = await Doctor.countDocuments(searchQuery);
+
+        res.status(200).json({ data: doctors, meta: { totalRecords } });
+
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             message: error.message
         });
     }
 });
+
+router.get('/:doctorId', async (req,res) => {
+    try {
+        const doctorId = req.params.doctorId;
+        const doctor = await Doctor.findById(doctorId).select('-password');
+        if (doctor) {
+            res.status(200).json(doctor);
+        } else {
+            res.status(404).json({ message: 'Doctor not found' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: error.message
+        });
+    }
+})
+
 
 router.delete('/', async (req, res) => {
     const doctorId = req.body.doctorId;

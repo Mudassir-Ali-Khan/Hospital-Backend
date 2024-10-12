@@ -7,6 +7,7 @@ const patientSchema = new mongoose.Schema({
     password: String,
     phonenumber: Number,
     gender: String,
+    inActive: { type: Boolean, default: true },
 }, {
     timestamps: true
 });

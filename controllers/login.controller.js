@@ -29,7 +29,8 @@ router.post('/login', async function (req, res) {
         if (adminObj === null) {
             res.status(401);
             throw new Error("Invalid email or password");    
-        } else {
+        } 
+         else {
             // data, private/secret key, expiry time
             const myTokenObj = {
                 email: adminObj.email,
