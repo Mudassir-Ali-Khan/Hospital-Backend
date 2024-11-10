@@ -137,6 +137,15 @@ router.patch('/:id', async (req, res) => {
             gender: req.body.gender
         }
 
+        const patientExistsWithEmail_Phonenumber = await Patient.findOne({ $or: [
+            { email: req.body.email },
+            { phonenumber: req.body.phonenumber },
+        ]});
+
+        if (patientExistsWithEmail_Phonenumber && patientExistsWithEmail_Phonenumber._id.toString() !== patientId) {
+            return res.status(400).json({ message: 'Patient with this email or phonenumber already exists' });
+        }
+
         const updatedPatients = await Patient.findByIdAndUpdate(patientId, updatePatients);
 
         if (updatedPatients) {

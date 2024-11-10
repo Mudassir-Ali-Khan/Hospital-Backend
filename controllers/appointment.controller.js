@@ -73,6 +73,7 @@ router.post('/', async function (req, res) {
         res.status(200).json({ message: 'Appointment created successfully' });
         
     } catch (error) {
+        res.status(500);
         res.json({ message: error.message }); 
     }
 });
@@ -98,6 +99,43 @@ router.patch('/status', async function (req, res) {
 
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+// This Api used to transfer the appointment to another doctor
+router.patch('/doctor', async function (req, res) {
+    try {
+        const { appointmentId, newDoctorId } = req.body;
+        const appointment = await Appointment.findById(appointmentId);
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+
+        const apptDate = new Date(appointment.appointmentDate);
+        const apptDay = apptDate.getDate();
+        const apptMonth = apptDate.getMonth() + 1;
+        const apptYear = apptDate.getFullYear();
+
+        const doctorAppointments = await Appointment.find({ doctor: doctorId });
+
+        doctorAppointments.forEach((doctorAppt) => {
+            const DAptDate = new Date(doctorAppt.appointmentDate);
+            const DApptDay = DAptDate.getDate();
+            const DApptMonth = DAptDate.getMonth() + 1;
+            const DApptYear = DAptDate.getFullYear();
+
+            if (apptDay == DApptDay && apptMonth == DApptMonth && apptYear == DApptYear && doctorAppt.appointmentTime === appointment.appointmentTime && doctorAppt.doctor.toString() === newDoctorId && doctorAppt.appointmentStatus === 'pending') {
+                res.status(400);
+                throw new Error('This doctor has an appointment on this day');
+            }
+        });
+        
+        appointment.doctor = newDoctorId;
+        await appointment.save();
+        res.status(200).json({ message: 'Appointment doctor updated successfully', appointment });
+
+    } catch (error) {
+        res.json({ message: error.message }); 
     }
 });
 
