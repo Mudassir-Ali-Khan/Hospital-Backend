@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Appointment = require('../models/appointment.model');
+const { default: mongoose } = require('mongoose');
 
 router.get('/', async function (req, res) {
     try {
@@ -73,6 +74,91 @@ router.post('/', async function (req, res) {
         
     } catch (error) {
         res.json({ message: error.message }); 
+    }
+});
+
+router.patch('/status', async function (req, res) {
+    try {
+        const { appointmentId, status } = req.body;
+
+        const validStatuses = ['pending', 'completed', 'cancelled'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ message: 'Invalid status provided' });
+        }
+
+        const appointment = await Appointment.findById(appointmentId);
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+
+        appointment.status = status;
+        await appointment.save();
+
+        res.status(200).json({ message: 'Appointment status updated successfully', appointment });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.patch('/', async function (req, res) {
+    try {
+        const { appointmentId, patientId, doctorId, newAppointmentDate, newAppointmentTime } = req.body;
+
+        const apptDate = new Date(newAppointmentDate);
+        const appointmentDay = apptDate.getDate();
+        const appointmentMonth = apptDate.getMonth() + 1;
+        const appointmentYear = apptDate.getFullYear();
+
+        const appointment = await Appointment.findById(appointmentId);
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+
+        const patientAppointments = await Appointment.find({patient: patientId, _id: {$not:{$eq: new mongoose.Types.ObjectId(appointmentId)}}});
+        console.log(patientAppointments)
+        const allAppointments = await Appointment.find();
+
+        patientAppointments.forEach((appt) => {
+            const apptDate = new Date(appt.appointmentDate);
+            const apptDay = apptDate.getDate();
+            const apptMonth = apptDate.getMonth() + 1;
+            const apptYear = apptDate.getFullYear();
+
+            if (apptDay == appointmentDay && apptMonth == appointmentMonth && apptYear == appointmentYear &&
+                appt.doctor.toString() === doctorId) {
+                return res.status(400).json({ message: 'Patient already has an appointment with this doctor on this day' });
+            }
+
+            if (apptDay == appointmentDay && apptMonth == appointmentMonth && apptYear == appointmentYear &&
+                appt.doctor.toString() !== doctorId && appt.appointmentTime === newAppointmentTime) {
+                return res.status(400).json({ message: 'You already have an appointment at this time with another doctor' });
+            }
+        });
+
+        allAppointments.forEach((appt) => {
+            const apptDate = new Date(appt.appointmentDate);
+            const apptDay = apptDate.getDate();
+            const apptMonth = apptDate.getMonth() + 1;
+            const apptYear = apptDate.getFullYear();
+
+            if (apptDay == appointmentDay && apptMonth == appointmentMonth && apptYear == appointmentYear &&
+                appt.patient.toString() !== patientId && appt.doctor.toString() === doctorId && appt.appointmentTime === newAppointmentTime) {
+                return res.status(400).json({ message: 'Another patient has an appointment at this time with this doctor' });
+            }
+        });
+
+        appointment.patient = patientId;
+        appointment.doctor = doctorId;
+        appointment.appointmentDate = apptDate;
+        appointment.appointmentTime = newAppointmentTime;
+
+        await appointment.save();
+
+        res.status(200).json({ message: 'Appointment updated successfully', appointment });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
