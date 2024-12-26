@@ -77,7 +77,7 @@ router.post('/', async function (req, res) {
         res.json({ message: error.message }); 
     }
 });
-
+// cron job 
 router.patch('/status', async function (req, res) {
     try {
         const { appointmentId, status } = req.body;
@@ -92,7 +92,7 @@ router.patch('/status', async function (req, res) {
             return res.status(404).json({ message: 'Appointment not found' });
         }
 
-        appointment.status = status;
+        appointment.appointmentStatus = status;
         await appointment.save();
 
         res.status(200).json({ message: 'Appointment status updated successfully', appointment });

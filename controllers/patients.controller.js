@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Patient = require('../models/patients.model');
 const hash512 = require('../utils/hash');
+const Appointment = require('../models/appointment.model');
 
 
 router.post('/', async function (req, res) {
@@ -96,12 +97,17 @@ router.get('/', async function (req, res) {
     }
 });
 
+// ('doctor', 'name email phonenumber')
+
 router.get('/:patientId', async (req,res) => {
     try {
         const patientId = req.params.patientId;
         const patient = await Patient.findById(patientId).select('-password');
+        console.log("patient", patient);
+        const appointments = await Appointment.find({ patient: patientId }).populate('doctor', 'firstname lastname email');
+        console.log("appointments", appointments);
         if (patient) {
-            res.status(200).json(patient);
+            res.status(200).json({ patient, appointments });
         } else {
             res.status(404).json({ message: 'Patient not found' });
         }
